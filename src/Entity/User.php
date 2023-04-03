@@ -23,6 +23,9 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $adress = null;
 
+    #[ORM\Column]
+    private ?int $postal = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +63,18 @@ class User
     public function setAdress(string $adress): self
     {
         $this->adress = $adress;
+
+        return $this;
+    }
+
+    public function getPostal(): ?int
+    {
+        return $this->postal;
+    }
+
+    public function setPostal(int $postal): self
+    {
+        $this->postal = $postal;
 
         return $this;
     }
