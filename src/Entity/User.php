@@ -79,4 +79,6 @@ class User
         return $this;
     }
 
+     
+    private $products;
 }
