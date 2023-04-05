@@ -18,7 +18,6 @@ class Purchase
         return $this->id;
     }
     
-   
     #[ORM\ManyToOne(targetEntity: 'App\Entity\User')]
     #[ORM\JoinColumn(nullable: false)]
     private $user;
@@ -31,5 +30,20 @@ class Purchase
 
     #[ORM\Column(type: 'datetime')]
     private $purchaseDate;
+
+    
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\User')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
+    
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Product')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $product;
+
+    
+    #[ORM\Column(type: 'datetime')]
+    private $purchaseDate;
+
 
 }
