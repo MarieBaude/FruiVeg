@@ -79,7 +79,6 @@ class User
         return $this;
     }
 
-
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Product', mappedBy: 'users')]
     private $products;
 }
