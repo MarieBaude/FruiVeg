@@ -78,4 +78,15 @@ class Product
 
         return $this;
     }
+
+   
+    #[ORM\ManyToMany(targetEntity: 'App\Entity\User', inversedBy: 'products')]
+    #[ORM\JoinTable(name: 'purchase',
+          joinColumns={@ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id')},
+          inverseJoinColumns={@ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')}
+     )]
+     
+    private $users;
+
+
 }
