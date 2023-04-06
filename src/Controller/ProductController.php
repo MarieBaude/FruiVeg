@@ -58,4 +58,15 @@ class ProductController extends AbstractController
 
         return $this->json($form->getErrors(true), 400);
     }
+
+     
+    #[Route('/products/{id}', name: 'product_delete', methods: 'DELETE')]
+    public function delete(Product $product): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($product);
+        $entityManager->flush();
+
+        return new Response('', 204);
+    }
 }
