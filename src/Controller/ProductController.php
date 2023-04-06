@@ -34,4 +34,28 @@ class ProductController extends AbstractController
 
         return $this->json($form->getErrors(true), 400);
     }
+
+    
+    #[Route('/products/{id}', name: 'product_show', methods: 'GET')]
+    public function show(Product $product): Response
+    {
+        return $this->json($product);
+    }
+
+    
+    #[Route('/products/{id}', name: 'product_update', methods: 'PUT')]
+    public function update(Request $request, Product $product): Response
+    {
+        $form = $this->createForm(ProductType::class, $product);
+        $form->submit(json_decode($request->getContent(), true), false);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            return $this->json($product);
+        }
+
+        return $this->json($form->getErrors(true), 400);
+    }
 }
