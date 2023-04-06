@@ -12,7 +12,7 @@ class ProductController extends AbstractController
     public function index(): JsonResponse
     {
         return $this->json([
-            'message' => 'Welcome to your new controller!',
+            'message' => 'All products',
             'path' => 'src/Controller/ProductController.php',
         ]);
     }
