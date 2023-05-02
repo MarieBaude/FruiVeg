@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,6 +28,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\OneToMany(mappedBy: 'users', targetEntity: Orders::class)]
+    private Collection $orders;
+
+    #[ORM\OneToMany(mappedBy: 'users', targetEntity: Scores::class)]
+    private Collection $scores;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+        $this->scores = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -95,5 +109,65 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Orders>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getUsers() === $this) {
+                $order->setUsers(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scores>
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    public function addScore(Scores $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores->add($score);
+            $score->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScore(Scores $score): self
+    {
+        if ($this->scores->removeElement($score)) {
+            // set the owning side to null (unless already changed)
+            if ($score->getUsers() === $this) {
+                $score->setUsers(null);
+            }
+        }
+
+        return $this;
     }
 }

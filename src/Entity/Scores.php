@@ -16,6 +16,12 @@ class Scores
     #[ORM\Column]
     private ?int $note = null;
 
+    #[ORM\ManyToOne(inversedBy: 'scores')]
+    private ?Products $products = null;
+
+    #[ORM\ManyToOne(inversedBy: 'scores')]
+    private ?Users $users = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -29,6 +35,30 @@ class Scores
     public function setNote(int $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getProducts(): ?Products
+    {
+        return $this->products;
+    }
+
+    public function setProducts(?Products $products): self
+    {
+        $this->products = $products;
+
+        return $this;
+    }
+
+    public function getUsers(): ?Users
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?Users $users): self
+    {
+        $this->users = $users;
 
         return $this;
     }

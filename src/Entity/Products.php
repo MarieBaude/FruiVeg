@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
@@ -33,6 +35,34 @@ class Products
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: ProductImages::class, inversedBy: 'products')]
+    private Collection $productImages;
+
+    #[ORM\ManyToMany(targetEntity: Tags::class, inversedBy: 'products')]
+    private Collection $tags;
+
+    #[ORM\ManyToMany(targetEntity: Comments::class, inversedBy: 'products')]
+    private Collection $comments;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Categories $categories = null;
+
+    #[ORM\ManyToMany(targetEntity: Orders::class, mappedBy: 'products')]
+    private Collection $orders;
+
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Scores::class)]
+    private Collection $scores;
+
+    public function __construct()
+    {
+        $this->productImages = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->scores = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -119,6 +149,147 @@ class Products
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductImages>
+     */
+    public function getProductImages(): Collection
+    {
+        return $this->productImages;
+    }
+
+    public function addProductImage(ProductImages $productImage): self
+    {
+        if (!$this->productImages->contains($productImage)) {
+            $this->productImages->add($productImage);
+        }
+
+        return $this;
+    }
+
+    public function removeProductImage(ProductImages $productImage): self
+    {
+        $this->productImages->removeElement($productImage);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tags>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): self
+    {
+        $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comments>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        $this->comments->removeElement($comment);
+
+        return $this;
+    }
+
+    public function getCategories(): ?Categories
+    {
+        return $this->categories;
+    }
+
+    public function setCategories(?Categories $categories): self
+    {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Orders>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            $order->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scores>
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    public function addScore(Scores $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores->add($score);
+            $score->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScore(Scores $score): self
+    {
+        if ($this->scores->removeElement($score)) {
+            // set the owning side to null (unless already changed)
+            if ($score->getProducts() === $this) {
+                $score->setProducts(null);
+            }
+        }
 
         return $this;
     }

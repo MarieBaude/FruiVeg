@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CommentsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
@@ -21,6 +23,14 @@ class Comments
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Products::class, mappedBy: 'comments')]
+    private Collection $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -59,6 +69,33 @@ class Comments
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Products>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Products $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->addComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Products $product): self
+    {
+        if ($this->products->removeElement($product)) {
+            $product->removeComment($this);
+        }
 
         return $this;
     }
