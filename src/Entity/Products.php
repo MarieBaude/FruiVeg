@@ -52,12 +52,16 @@ class Products
     #[ORM\ManyToMany(targetEntity: Orders::class, mappedBy: 'products')]
     private Collection $orders;
 
+    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Scores::class)]
+    private Collection $scores;
+
     public function __construct()
     {
         $this->productImages = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->scores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -255,6 +259,36 @@ class Products
     {
         if ($this->orders->removeElement($order)) {
             $order->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scores>
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    public function addScore(Scores $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores->add($score);
+            $score->setProducts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScore(Scores $score): self
+    {
+        if ($this->scores->removeElement($score)) {
+            // set the owning side to null (unless already changed)
+            if ($score->getProducts() === $this) {
+                $score->setProducts(null);
+            }
         }
 
         return $this;
