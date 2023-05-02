@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrdersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrdersRepository::class)]
@@ -24,6 +26,18 @@ class Orders
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     private ?Users $users = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?OrderStatus $orderStatus = null;
+
+    #[ORM\ManyToMany(targetEntity: Products::class, inversedBy: 'orders')]
+    private Collection $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +88,42 @@ class Orders
     public function setUsers(?Users $users): self
     {
         $this->users = $users;
+
+        return $this;
+    }
+
+    public function getOrderStatus(): ?OrderStatus
+    {
+        return $this->orderStatus;
+    }
+
+    public function setOrderStatus(?OrderStatus $orderStatus): self
+    {
+        $this->orderStatus = $orderStatus;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Products>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Products $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Products $product): self
+    {
+        $this->products->removeElement($product);
 
         return $this;
     }
